@@ -16,6 +16,10 @@ package org.eclipse.store.examples.reloader;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class DataRoot
 {
@@ -26,6 +30,24 @@ public class DataRoot
     {
         return this.data;
     }
+final Map<Class<? extends Test>, Map<UUID, Test>> testMap = new ConcurrentHashMap<>();
+
+static class Test{}
+
+static class Item extends Test{
+    public final UUID uuid = UUID.randomUUID();
+    public String string;
+
+    public Item(String string) {
+        this.string = string;
+    }
+}
+
+    public List<Test> getItems(){
+        return new ArrayList<>(testMap.get(Item.class).values());
+    }
+
+
 
     public void addItem(final String value) {
         this.data.add(value);
