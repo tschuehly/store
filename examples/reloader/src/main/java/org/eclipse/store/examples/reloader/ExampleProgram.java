@@ -20,6 +20,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.eclipse.serializer.persistence.binary.types.Binary;
 import org.eclipse.serializer.persistence.types.PersistenceManager;
+import org.eclipse.serializer.persistence.types.Storer;
 import org.eclipse.serializer.persistence.util.Reloader;
 import org.eclipse.store.examples.reloader.DataRoot.Item;
 import org.eclipse.store.examples.reloader.DataRoot.Test;
@@ -32,8 +33,6 @@ public class ExampleProgram {
     final DataRoot root = new DataRoot();
     try (StorageManager storageManager = StorageProvider.createStorageManager("target/data", root)
         .start()) {
-      root.addItem("value 1");
-      root.addItem("value 2");
 
       Map<Class<? extends Test>, Map<UUID, Test>> didTypeMap = root.testMap;
       if (!didTypeMap.containsKey(Item.class)) {
@@ -44,7 +43,9 @@ public class ExampleProgram {
 
       var item = new Item("value 3");
       map.put(item.uuid, item);
-      storageManager.createEagerStorer().store(map);
+      Storer eagerStorer = storageManager.createEagerStorer();
+      eagerStorer.store(map);
+      eagerStorer.commit();
 
       System.out.printf("Number of items in list: %s%n", root.getItems().size());
 
